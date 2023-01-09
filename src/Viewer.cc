@@ -18,6 +18,8 @@
 * along with ORB-SLAM2. If not, see <http://www.gnu.org/licenses/>.
 */
 
+#include<stdlib.h>
+
 #include "Viewer.h"
 #include <pangolin/pangolin.h>
 
