@@ -62,6 +62,7 @@ int main(int argc, char **argv)
     }
 
     // Create SLAM system. It initializes all system threads and gets ready to process frames.
+    // SLAM(Voc, Setting, Sensor, )
     ORB_SLAM2::System SLAM(argv[1],argv[2],ORB_SLAM2::System::RGBD,true);
 
     // Vector for tracking time statistics
@@ -78,7 +79,7 @@ int main(int argc, char **argv)
     {
         // Read image and depthmap from file
         imRGB = cv::imread(string(argv[3])+"/"+vstrImageFilenamesRGB[ni],CV_LOAD_IMAGE_UNCHANGED);
-	cout<<imRGB<<endl;
+	
         imD = cv::imread(string(argv[3])+"/"+vstrImageFilenamesD[ni],CV_LOAD_IMAGE_UNCHANGED);
         double tframe = vTimestamps[ni];
 
@@ -143,6 +144,7 @@ int main(int argc, char **argv)
 void LoadImages(const string &strAssociationFilename, vector<string> &vstrImageFilenamesRGB,
                 vector<string> &vstrImageFilenamesD, vector<double> &vTimestamps)
 {
+// makes vectors for all rgb, dpeth, timestamps in order
     ifstream fAssociation;
     fAssociation.open(strAssociationFilename.c_str());
     while(!fAssociation.eof())

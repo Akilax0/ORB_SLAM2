@@ -642,6 +642,7 @@ void Frame::ComputeStereoMatches()
 
 void Frame::ComputeStereoFromRGBD(const cv::Mat &imDepth)
 {
+    //corresponding stereo cordinate and depth 
     mvuRight = vector<float>(N,-1);
     mvDepth = vector<float>(N,-1);
 
