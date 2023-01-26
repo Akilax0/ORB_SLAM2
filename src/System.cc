@@ -361,7 +361,8 @@ void System::SaveTrajectoryTUM(const string &filename)
 
         cv::Mat Trw = cv::Mat::eye(4,4,CV_32F);
 
-        // If the reference keyframe was culled, traverse the spanning tree to get a suitable keyframe.
+        // If the reference keyframe was culled, 
+        // traverse the spanning tree to get a suitable keyframe.
         while(pKF->isBad())
         {
             Trw = Trw*pKF->mTcp;
@@ -371,12 +372,15 @@ void System::SaveTrajectoryTUM(const string &filename)
         Trw = Trw*pKF->GetPose()*Two;
 
         cv::Mat Tcw = (*lit)*Trw;
+        // cv::Mat Tcw = (*lit);
         cv::Mat Rwc = Tcw.rowRange(0,3).colRange(0,3).t();
         cv::Mat twc = -Rwc*Tcw.rowRange(0,3).col(3);
 
+        //vector<float> q = Converter::toQuaternion(Rwc);
         vector<float> q = Converter::toQuaternion(Rwc);
 
         f << setprecision(6) << *lT << " " <<  setprecision(9) << twc.at<float>(0) << " " << twc.at<float>(1) << " " << twc.at<float>(2) << " " << q[0] << " " << q[1] << " " << q[2] << " " << q[3] << endl;
+        //f << setprecision(6) << *lT << " " <<  setprecision(9) << twc.at<float>(0) << " " << twc.at<float>(1) << " " << twc.at<float>(2) << " " << q[0] << " " << q[1] << " " << q[2] << " " << q[3] << endl;
     }
     f.close();
     cout << endl << "trajectory saved!" << endl;

@@ -57,6 +57,7 @@ Frame::Frame(const Frame &frame)
         SetPose(frame.mTcw);
 }
 
+//Stereo Frame 
 
 Frame::Frame(const cv::Mat &imLeft, const cv::Mat &imRight, const double &timeStamp, ORBextractor* extractorLeft, ORBextractor* extractorRight, ORBVocabulary* voc, cv::Mat &K, cv::Mat &distCoef, const float &bf, const float &thDepth)
     :mpORBvocabulary(voc),mpORBextractorLeft(extractorLeft),mpORBextractorRight(extractorRight), mTimeStamp(timeStamp), mK(K.clone()),mDistCoef(distCoef.clone()), mbf(bf), mThDepth(thDepth),
@@ -115,6 +116,8 @@ Frame::Frame(const cv::Mat &imLeft, const cv::Mat &imRight, const double &timeSt
 
     AssignFeaturesToGrid();
 }
+
+//RGBD Frame 
 
 Frame::Frame(const cv::Mat &imGray, const cv::Mat &imDepth, const double &timeStamp, ORBextractor* extractor,ORBVocabulary* voc, cv::Mat &K, cv::Mat &distCoef, const float &bf, const float &thDepth)
     :mpORBvocabulary(voc),mpORBextractorLeft(extractor),mpORBextractorRight(static_cast<ORBextractor*>(NULL)),
@@ -646,6 +649,7 @@ void Frame::ComputeStereoFromRGBD(const cv::Mat &imDepth)
     mvuRight = vector<float>(N,-1);
     mvDepth = vector<float>(N,-1);
 
+    float maxDepth = 0;
     for(int i=0; i<N; i++)
     {
         const cv::KeyPoint &kp = mvKeys[i];
@@ -655,13 +659,30 @@ void Frame::ComputeStereoFromRGBD(const cv::Mat &imDepth)
         const float &u = kp.pt.x;
 
         const float d = imDepth.at<float>(v,u);
+        
 
         if(d>0)
         {
-            mvDepth[i] = d;
-            mvuRight[i] = kpU.pt.x-mbf/d;
+            // mvDepth[i] = d;
+            // mvuRight[i] = kpU.pt.x-mbf/d;
+
+
+            // depth can be calculated using disparity
+            // map
+            // mbf/d - disparity
+  
+            mvDepth[i] = mbf/d;
+            mvuRight[i] = kpU.pt.x-d;
+
+            if(mvDepth[i] > maxDepth){
+                maxDepth = mvDepth[i];
+            }
         }
     }
+
+    // adaptive baseline
+    mbf = mbf * maxDepth;
+    mThDepth = mThDepth * maxDepth;
 }
 
 cv::Mat Frame::UnprojectStereo(const int &i)

@@ -144,7 +144,7 @@ int main(int argc, char **argv)
 void LoadImages(const string &strAssociationFilename, vector<string> &vstrImageFilenamesRGB,
                 vector<string> &vstrImageFilenamesD, vector<double> &vTimestamps)
 {
-// makes vectors for all rgb, dpeth, timestamps in order
+// makes vectors for all rgb, depth, timestamps in order
     ifstream fAssociation;
     fAssociation.open(strAssociationFilename.c_str());
     while(!fAssociation.eof())
@@ -158,12 +158,19 @@ void LoadImages(const string &strAssociationFilename, vector<string> &vstrImageF
             double t;
             string sRGB, sD;
             ss >> t;
+            cout<<t<<" ";
             vTimestamps.push_back(t);
             ss >> sRGB;
+            cout<<sRGB<<" ";
             vstrImageFilenamesRGB.push_back(sRGB);
             ss >> t;
+            cout<< t<< " ";
             ss >> sD;
+            cout<<sD<< " ";
+            
             vstrImageFilenamesD.push_back(sD);
+
+            cout<<endl;
 
         }
     }
