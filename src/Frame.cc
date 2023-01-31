@@ -649,7 +649,8 @@ void Frame::ComputeStereoFromRGBD(const cv::Mat &imDepth)
     mvuRight = vector<float>(N,-1);
     mvDepth = vector<float>(N,-1);
 
-    float maxDepth = 0;
+    // float maxDepth = 0;
+
     for(int i=0; i<N; i++)
     {
         const cv::KeyPoint &kp = mvKeys[i];
@@ -660,29 +661,31 @@ void Frame::ComputeStereoFromRGBD(const cv::Mat &imDepth)
 
         const float d = imDepth.at<float>(v,u);
         
+        // cout<<d<<endl;
 
         if(d>0)
         {
-            // mvDepth[i] = d;
-            // mvuRight[i] = kpU.pt.x-mbf/d;
+            mvDepth[i] = d;
+            mvuRight[i] = kpU.pt.x-mbf/d;
 
 
             // depth can be calculated using disparity
             // map
-            // mbf/d - disparity
+            // mbf/d - disparity        
   
-            mvDepth[i] = mbf/d;
-            mvuRight[i] = kpU.pt.x-d;
+            // mvDepth[i] = mbf/d;
+            // mvuRight[i] = kpU.pt.x-d;
 
-            if(mvDepth[i] > maxDepth){
-                maxDepth = mvDepth[i];
-            }
+            // if(mvDepth[i] > maxDepth){
+            //     maxDepth =mvDepth[i];
+            // }
         }
     }
 
-    // adaptive baseline
-    mbf = mbf * maxDepth;
-    mThDepth = mThDepth * maxDepth;
+        // adaptive baseline
+        // cout<<"Max Depth: "<<maxDepth<<endl;
+    //    mbf = mbf * maxDepth;
+    //     mThDepth = mThDepth * maxDepth;
 }
 
 cv::Mat Frame::UnprojectStereo(const int &i)

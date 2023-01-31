@@ -36,11 +36,11 @@ Camera.height: 192
 
 # IR projector baseline times fx (aprox.) / depth 
 # find depth relatively and multiply
-Camera.bf: 4.852278
+Camera.bf: 388.18224
 
 
 # Close/Far threshold. Baseline times.
-ThDepth: 40.0
+ThDepth: 35.0
 
 # Deptmap values factor 
 DepthMapFactor: 5000.0
