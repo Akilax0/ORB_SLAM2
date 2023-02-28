@@ -81,6 +81,8 @@ Frame::Frame(const cv::Mat &imLeft, const cv::Mat &imRight, const double &timeSt
     threadLeft.join();
     threadRight.join();
 
+    // This is checked on initialization 
+    // If more than 500 taken as keyframe
     N = mvKeys.size();
 
     if(mvKeys.empty())
@@ -125,6 +127,7 @@ Frame::Frame(const cv::Mat &imGray, const cv::Mat &imDepth, const double &timeSt
 {
     // Frame ID
     mnId=nNextId++;
+    cout<<"Current Frame id: "<<mnId<<endl;
 
     // Scale Level Info
     mnScaleLevels = mpORBextractorLeft->GetLevels();
@@ -136,6 +139,7 @@ Frame::Frame(const cv::Mat &imGray, const cv::Mat &imDepth, const double &timeSt
     mvInvLevelSigma2 = mpORBextractorLeft->GetInverseScaleSigmaSquares();
 
     // ORB extraction
+    // Extracts ORB info -> keypoints
     ExtractORB(0,imGray);
 
     N = mvKeys.size();
@@ -143,11 +147,18 @@ Frame::Frame(const cv::Mat &imGray, const cv::Mat &imDepth, const double &timeSt
     if(mvKeys.empty())
         return;
 
+    // undistorted keypoints
+    // UnKeys
     UndistortKeyPoints();
 
+    // Compute depth from RGB
+    // mvuRight and mvDepth
     ComputeStereoFromRGBD(imDepth);
 
+
+    // map points associated with keypoints
     mvpMapPoints = vector<MapPoint*>(N,static_cast<MapPoint*>(NULL));
+    // flag to identify outlier associations
     mvbOutlier = vector<bool>(N,false);
 
     // This is done only for the first Frame (or after a change in the calibration)
@@ -158,6 +169,7 @@ Frame::Frame(const cv::Mat &imGray, const cv::Mat &imDepth, const double &timeSt
         mfGridElementWidthInv=static_cast<float>(FRAME_GRID_COLS)/static_cast<float>(mnMaxX-mnMinX);
         mfGridElementHeightInv=static_cast<float>(FRAME_GRID_ROWS)/static_cast<float>(mnMaxY-mnMinY);
 
+        // IS this K
         fx = K.at<float>(0,0);
         fy = K.at<float>(1,1);
         cx = K.at<float>(0,2);
@@ -191,6 +203,7 @@ Frame::Frame(const cv::Mat &imGray, const double &timeStamp, ORBextractor* extra
     mvInvLevelSigma2 = mpORBextractorLeft->GetInverseScaleSigmaSquares();
 
     // ORB extraction
+    // Assigns keypoints
     ExtractORB(0,imGray);
 
     N = mvKeys.size();
@@ -198,6 +211,8 @@ Frame::Frame(const cv::Mat &imGray, const double &timeStamp, ORBextractor* extra
     if(mvKeys.empty())
         return;
 
+    // Calculate undistroted keypoints
+    // UnKeys
     UndistortKeyPoints();
 
     // Set no stereo information

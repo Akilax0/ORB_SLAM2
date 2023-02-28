@@ -231,7 +231,9 @@ cv::Mat Tracking::GrabImageRGBD(const cv::Mat &imRGB,const cv::Mat &imD, const d
 
     mCurrentFrame = Frame(mImGray,imDepth,timestamp,mpORBextractorLeft,mpORBVocabulary,mK,mDistCoef,mbf,mThDepth);
 
+    cout<<"Pose before Track: "<<mCurrentFrame.mTcw << endl;
     Track();
+    cout<<"Pose after Track: "<<mCurrentFrame.mTcw << endl;
 
     return mCurrentFrame.mTcw.clone();
 }
@@ -268,6 +270,9 @@ cv::Mat Tracking::GrabImageMonocular(const cv::Mat &im, const double &timestamp)
 
 void Tracking::Track()
 {
+
+
+    cout<<"Last Frame pose at the begining of Track: "<< mLastFrame.mTcw<< endl;
     if(mState==NO_IMAGES_YET)
     {
         mState = NOT_INITIALIZED;
@@ -300,12 +305,14 @@ void Tracking::Track()
         {
             // Local Mapping is activated. This is the normal behaviour, unless
             // you explicitly activate the "only tracking" mode.
-
             if(mState==OK)
             {
                 // Local Mapping might have changed some MapPoints tracked in last frame
                 CheckReplacedInLastFrame();
 
+
+    cout<<"============================================="<<endl;
+    cout<<"Current Frame pose: "<< mCurrentFrame.mTcw<< endl;
                 if(mVelocity.empty() || mCurrentFrame.mnId<mnLastRelocFrameId+2)
                 {
                     bOK = TrackReferenceKeyFrame();
@@ -324,6 +331,9 @@ void Tracking::Track()
         }
         else
         {
+
+            cout << "===================IS THIS USED?=================" <<endl;
+
             // Localization Mode: Local Mapping is deactivated
 
             if(mState==LOST)
@@ -395,6 +405,9 @@ void Tracking::Track()
         }
 
         mCurrentFrame.mpReferenceKF = mpReferenceKF;
+
+        // Pose is changed here by calling TrackLocalMap()
+        // In it PoseOptimizer called 
 
         // If we have an initial estimation of the camera pose and matching. Track the local map.
         if(!mbOnlyTracking)
@@ -504,6 +517,10 @@ void Tracking::Track()
         mlFrameTimes.push_back(mlFrameTimes.back());
         mlbLost.push_back(mState==LOST);
     }
+
+    cout<<"Current KeyFrame pose: "<< mCurrentFrame.mpReferenceKF->GetPose()<< endl;
+    cout<<"Current KeyFrame pose inverse: "<< mCurrentFrame.mpReferenceKF->GetPoseInverse()<< endl;
+    cout<<"Relative Frame Pose: "<< mCurrentFrame.mTcw*mCurrentFrame.mpReferenceKF->GetPoseInverse() << endl;
 
 }
 
@@ -740,6 +757,9 @@ void Tracking::CreateInitialMapMonocular()
 
 void Tracking::CheckReplacedInLastFrame()
 {
+    // iterate through keypoints in last frame
+    // get map point for each
+    // if replaced assign
     for(int i =0; i<mLastFrame.N; i++)
     {
         MapPoint* pMP = mLastFrame.mvpMapPoints[i];
@@ -772,9 +792,17 @@ bool Tracking::TrackReferenceKeyFrame()
         return false;
 
     mCurrentFrame.mvpMapPoints = vpMapPointMatches;
+
+    //Assigns previous frame pose to current frame 
     mCurrentFrame.SetPose(mLastFrame.mTcw);
 
+   // cout<<"============================================="<<endl;
+    //cout<<"Current Frame pose inside TRACK REF : "<< mCurrentFrame.mTcw<< endl;
+
     Optimizer::PoseOptimization(&mCurrentFrame);
+
+//    cout<<"============================================="<<endl;
+  //  cout<<"Current Frame pose after optimization : "<< mCurrentFrame.mTcw<< endl;
 
     // Discard outliers
     int nmatchesMap = 0;
@@ -807,6 +835,7 @@ void Tracking::UpdateLastFrame()
     cv::Mat Tlr = mlRelativeFramePoses.back();
 
     mLastFrame.SetPose(Tlr*pRef->GetPose());
+    cout<< "Last Frame Pose:" << mLastFrame.mTcw<<endl;
 
     if(mnLastKeyFrameId==mLastFrame.mnId || mSensor==System::MONOCULAR || !mbOnlyTracking)
         return;
@@ -868,13 +897,18 @@ void Tracking::UpdateLastFrame()
 
 bool Tracking::TrackWithMotionModel()
 {
+
+    cout<< "Motion model tracking begins" <<endl;
     ORBmatcher matcher(0.9,true);
 
     // Update last frame pose according to its reference keyframe
     // Create "visual odometry" points if in Localization Mode
     UpdateLastFrame();
 
+
+    cout<<"Current Frame pose before motion model: "<< mCurrentFrame.mTcw<< endl;
     mCurrentFrame.SetPose(mVelocity*mLastFrame.mTcw);
+    cout<<"Current Frame pose after motion model: "<< mCurrentFrame.mTcw<< endl;
 
     fill(mCurrentFrame.mvpMapPoints.begin(),mCurrentFrame.mvpMapPoints.end(),static_cast<MapPoint*>(NULL));
 

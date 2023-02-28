@@ -33,6 +33,17 @@ using namespace std;
 void LoadImages(const string &strAssociationFilename, vector<string> &vstrImageFilenamesRGB,
                 vector<string> &vstrImageFilenamesD, vector<double> &vTimestamps);
 
+
+/*
+
+argv
+
+1 - vocabulary
+2- .yaml file
+3 - dataset path
+4 - associate.txt
+
+*/
 int main(int argc, char **argv)
 {
     if(argc != 5)
@@ -46,7 +57,11 @@ int main(int argc, char **argv)
     vector<string> vstrImageFilenamesD;
     vector<double> vTimestamps;
     string strAssociationFilename = string(argv[4]);
+    // Loading images(paths) to vectors 
     LoadImages(strAssociationFilename, vstrImageFilenamesRGB, vstrImageFilenamesD, vTimestamps);
+
+    
+    
 
     // Check consistency in the number of images and depthmaps
     int nImages = vstrImageFilenamesRGB.size();
@@ -96,7 +111,8 @@ int main(int argc, char **argv)
         std::chrono::monotonic_clock::time_point t1 = std::chrono::monotonic_clock::now();
 #endif
 
-        // Pass the image to the SLAM system
+        cout<<"Passed to SLAM: " << string(argv[3])+"/"+vstrImageFilenamesRGB[ni]<< endl;
+    // Pass the image to the SLAM system
         SLAM.TrackRGBD(imRGB,imD,tframe);
 
 #ifdef COMPILEDWITHC11
@@ -120,6 +136,7 @@ int main(int argc, char **argv)
             usleep((T-ttrack)*1e6);
     }
 
+
     // Stop all threads
     SLAM.Shutdown();
 
@@ -137,6 +154,7 @@ int main(int argc, char **argv)
     // Save camera trajectory
     SLAM.SaveTrajectoryTUM("CameraTrajectory.txt");
     SLAM.SaveKeyFrameTrajectoryTUM("KeyFrameTrajectory.txt");   
+    SLAM.SaveTrajectoryKITTI("KITTITrajectory.txt");   
 
     return 0;
 }
@@ -147,6 +165,7 @@ void LoadImages(const string &strAssociationFilename, vector<string> &vstrImageF
 // makes vectors for all rgb, depth, timestamps in order
     ifstream fAssociation;
     fAssociation.open(strAssociationFilename.c_str());
+
     while(!fAssociation.eof())
     {
         string s;

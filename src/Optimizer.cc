@@ -238,6 +238,9 @@ void Optimizer::BundleAdjustment(const vector<KeyFrame *> &vpKFs, const vector<M
 
 int Optimizer::PoseOptimization(Frame *pFrame)
 {
+
+    // This changes the pose drastically 
+    // Why?
     g2o::SparseOptimizer optimizer;
     g2o::BlockSolver_6_3::LinearSolverType * linearSolver;
 
@@ -440,6 +443,9 @@ int Optimizer::PoseOptimization(Frame *pFrame)
         if(optimizer.edges().size()<10)
             break;
     }    
+
+    cout<<"============================================="<<endl;
+    cout<<"Current Frame pose inside pose optimizer : "<< pFrame->mTcw<< endl;
 
     // Recover optimized pose and return number of inliers
     g2o::VertexSE3Expmap* vSE3_recov = static_cast<g2o::VertexSE3Expmap*>(optimizer.vertex(0));

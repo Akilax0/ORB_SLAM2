@@ -156,6 +156,7 @@ cv::Mat System::TrackStereo(const cv::Mat &imLeft, const cv::Mat &imRight, const
     }
     }
 
+    // Camera pose -> Tcw 
     cv::Mat Tcw = mpTracker->GrabImageStereo(imLeft,imRight,timestamp);
 
     unique_lock<mutex> lock2(mMutexState);
@@ -334,6 +335,11 @@ void System::SaveTrajectoryTUM(const string &filename)
     vector<KeyFrame*> vpKFs = mpMap->GetAllKeyFrames();
     sort(vpKFs.begin(),vpKFs.end(),KeyFrame::lId);
 
+    cout<< "Keyframes:" << endl;
+    for(int i=0;i<vpKFs.size();i++){
+        cout<<vpKFs[i]<<endl;
+    }
+
     // Transform all keyframes so that the first keyframe is at the origin.
     // After a loop closure the first keyframe might not be at the origin.
     cv::Mat Two = vpKFs[0]->GetPoseInverse();
@@ -406,16 +412,25 @@ void System::SaveKeyFrameTrajectoryTUM(const string &filename)
     {
         KeyFrame* pKF = vpKFs[i];
 
+        cout<< "pKF: "<< pKF << endl;
+
        // pKF->SetPose(pKF->GetPose()*Two);
 
         if(pKF->isBad())
             continue;
 
+        // Rotation matrix
         cv::Mat R = pKF->GetRotation().t();
+
+        // Conversion to quaternion
         vector<float> q = Converter::toQuaternion(R);
+
+        // Camera center 
         cv::Mat t = pKF->GetCameraCenter();
+
         f << setprecision(6) << pKF->mTimeStamp << setprecision(7) << " " << t.at<float>(0) << " " << t.at<float>(1) << " " << t.at<float>(2)
           << " " << q[0] << " " << q[1] << " " << q[2] << " " << q[3] << endl;
+
         cout << setprecision(6) << pKF->mTimeStamp << setprecision(7) << " " << t.at<float>(0) << " " << t.at<float>(1) << " " << t.at<float>(2)
           << " " << q[0] << " " << q[1] << " " << q[2] << " " << q[3] << endl;
     }
@@ -436,6 +451,7 @@ void System::SaveTrajectoryKITTI(const string &filename)
     vector<KeyFrame*> vpKFs = mpMap->GetAllKeyFrames();
     sort(vpKFs.begin(),vpKFs.end(),KeyFrame::lId);
 
+
     // Transform all keyframes so that the first keyframe is at the origin.
     // After a loop closure the first keyframe might not be at the origin.
     cv::Mat Two = vpKFs[0]->GetPoseInverse();
@@ -443,6 +459,8 @@ void System::SaveTrajectoryKITTI(const string &filename)
     ofstream f;
     f.open(filename.c_str());
     f << fixed;
+
+    cout<<"All frame poses"<<endl;
 
     // Frame pose is stored relative to its reference keyframe (which is optimized by BA and pose graph).
     // We need to get first the keyframe pose and then concatenate the relative transformation.
@@ -470,8 +488,21 @@ void System::SaveTrajectoryKITTI(const string &filename)
         cv::Mat Tcw = (*lit)*Trw;
         cv::Mat Rwc = Tcw.rowRange(0,3).colRange(0,3).t();
         cv::Mat twc = -Rwc*Tcw.rowRange(0,3).col(3);
-
+/**
+ * format of pose ORBSLAM output
+ *   
+ *      r00, r01, r02, tx
+ *      r10, r11, r12, ty
+ *      r20, r21, r22, tz
+ *        0,   0,   0,  1 
+ * 
+ * outputted as :  r00 r01 r02 tx r10 r11 r12 ty r20 r21 r22 tz
+ * 
+*/
         f << setprecision(9) << Rwc.at<float>(0,0) << " " << Rwc.at<float>(0,1)  << " " << Rwc.at<float>(0,2) << " "  << twc.at<float>(0) << " " <<
+             Rwc.at<float>(1,0) << " " << Rwc.at<float>(1,1)  << " " << Rwc.at<float>(1,2) << " "  << twc.at<float>(1) << " " <<
+             Rwc.at<float>(2,0) << " " << Rwc.at<float>(2,1)  << " " << Rwc.at<float>(2,2) << " "  << twc.at<float>(2) << endl;
+        cout << setprecision(9) << Rwc.at<float>(0,0) << " " << Rwc.at<float>(0,1)  << " " << Rwc.at<float>(0,2) << " "  << twc.at<float>(0) << " " <<
              Rwc.at<float>(1,0) << " " << Rwc.at<float>(1,1)  << " " << Rwc.at<float>(1,2) << " "  << twc.at<float>(1) << " " <<
              Rwc.at<float>(2,0) << " " << Rwc.at<float>(2,1)  << " " << Rwc.at<float>(2,2) << " "  << twc.at<float>(2) << endl;
     }
