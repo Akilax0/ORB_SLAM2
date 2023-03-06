@@ -78,7 +78,7 @@ int main(int argc, char **argv)
 
     // Create SLAM system. It initializes all system threads and gets ready to process frames.
     // SLAM(Voc, Setting, Sensor, )
-    ORB_SLAM2::System SLAM(argv[1],argv[2],ORB_SLAM2::System::RGBD,true);
+    ORB_SLAM2::System SLAM(argv[1],argv[2],ORB_SLAM2::System::RGBD,false);
 
     // Vector for tracking time statistics
     vector<float> vTimesTrack;
@@ -111,7 +111,7 @@ int main(int argc, char **argv)
         std::chrono::monotonic_clock::time_point t1 = std::chrono::monotonic_clock::now();
 #endif
 
-        cout<<"Passed to SLAM: " << string(argv[3])+"/"+vstrImageFilenamesRGB[ni]<< endl;
+      //  cout<<"Passed to SLAM: " << string(argv[3])+"/"+vstrImageFilenamesRGB[ni]<< endl;
     // Pass the image to the SLAM system
         SLAM.TrackRGBD(imRGB,imD,tframe);
 

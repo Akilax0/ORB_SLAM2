@@ -444,8 +444,8 @@ int Optimizer::PoseOptimization(Frame *pFrame)
             break;
     }    
 
-    cout<<"============================================="<<endl;
-    cout<<"Current Frame pose inside pose optimizer : "<< pFrame->mTcw<< endl;
+    // cout<<"============================================="<<endl;
+    // cout<<"Current Frame pose inside pose optimizer : "<< pFrame->mTcw<< endl;
 
     // Recover optimized pose and return number of inliers
     g2o::VertexSE3Expmap* vSE3_recov = static_cast<g2o::VertexSE3Expmap*>(optimizer.vertex(0));

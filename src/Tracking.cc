@@ -231,9 +231,9 @@ cv::Mat Tracking::GrabImageRGBD(const cv::Mat &imRGB,const cv::Mat &imD, const d
 
     mCurrentFrame = Frame(mImGray,imDepth,timestamp,mpORBextractorLeft,mpORBVocabulary,mK,mDistCoef,mbf,mThDepth);
 
-    cout<<"Pose before Track: "<<mCurrentFrame.mTcw << endl;
+    // cout<<"Pose before Track: "<<mCurrentFrame.mTcw << endl;
     Track();
-    cout<<"Pose after Track: "<<mCurrentFrame.mTcw << endl;
+    // cout<<"Pose after Track: "<<mCurrentFrame.mTcw << endl;
 
     return mCurrentFrame.mTcw.clone();
 }
@@ -272,7 +272,7 @@ void Tracking::Track()
 {
 
 
-    cout<<"Last Frame pose at the begining of Track: "<< mLastFrame.mTcw<< endl;
+   // cout<<"Last Frame pose at the begining of Track: "<< mLastFrame.mTcw<< endl;
     if(mState==NO_IMAGES_YET)
     {
         mState = NOT_INITIALIZED;
@@ -311,8 +311,8 @@ void Tracking::Track()
                 CheckReplacedInLastFrame();
 
 
-    cout<<"============================================="<<endl;
-    cout<<"Current Frame pose: "<< mCurrentFrame.mTcw<< endl;
+    // cout<<"============================================="<<endl;
+    // cout<<"Current Frame pose: "<< mCurrentFrame.mTcw<< endl;
                 if(mVelocity.empty() || mCurrentFrame.mnId<mnLastRelocFrameId+2)
                 {
                     bOK = TrackReferenceKeyFrame();
@@ -518,9 +518,11 @@ void Tracking::Track()
         mlbLost.push_back(mState==LOST);
     }
 
-    cout<<"Current KeyFrame pose: "<< mCurrentFrame.mpReferenceKF->GetPose()<< endl;
-    cout<<"Current KeyFrame pose inverse: "<< mCurrentFrame.mpReferenceKF->GetPoseInverse()<< endl;
-    cout<<"Relative Frame Pose: "<< mCurrentFrame.mTcw*mCurrentFrame.mpReferenceKF->GetPoseInverse() << endl;
+    framePoses.push_back(mCurrentFrame.mTcw);
+    cout<<"Current Frame pose: "<< mCurrentFrame.mTcw<< endl;
+    // cout<<"Current KeyFrame pose: "<< mCurrentFrame.mpReferenceKF->GetPose()<< endl;
+    // cout<<"Current KeyFrame pose inverse: "<< mCurrentFrame.mpReferenceKF->GetPoseInverse()<< endl;
+    // cout<<"Relative Frame Pose: "<< mCurrentFrame.mTcw*mCurrentFrame.mpReferenceKF->GetPoseInverse() << endl;
 
 }
 
@@ -898,7 +900,7 @@ void Tracking::UpdateLastFrame()
 bool Tracking::TrackWithMotionModel()
 {
 
-    cout<< "Motion model tracking begins" <<endl;
+    // cout<< "Motion model tracking begins" <<endl;
     ORBmatcher matcher(0.9,true);
 
     // Update last frame pose according to its reference keyframe
@@ -906,9 +908,9 @@ bool Tracking::TrackWithMotionModel()
     UpdateLastFrame();
 
 
-    cout<<"Current Frame pose before motion model: "<< mCurrentFrame.mTcw<< endl;
+    // cout<<"Current Frame pose before motion model: "<< mCurrentFrame.mTcw<< endl;
     mCurrentFrame.SetPose(mVelocity*mLastFrame.mTcw);
-    cout<<"Current Frame pose after motion model: "<< mCurrentFrame.mTcw<< endl;
+    // cout<<"Current Frame pose after motion model: "<< mCurrentFrame.mTcw<< endl;
 
     fill(mCurrentFrame.mvpMapPoints.begin(),mCurrentFrame.mvpMapPoints.end(),static_cast<MapPoint*>(NULL));
 
