@@ -519,7 +519,7 @@ void Tracking::Track()
     }
 
     framePoses.push_back(mCurrentFrame.mTcw);
-    cout<<"Current Frame pose: "<< mCurrentFrame.mTcw<< endl;
+    // cout<<"Current Frame pose: "<< mCurrentFrame.mTcw<< endl;
     // cout<<"Current KeyFrame pose: "<< mCurrentFrame.mpReferenceKF->GetPose()<< endl;
     // cout<<"Current KeyFrame pose inverse: "<< mCurrentFrame.mpReferenceKF->GetPoseInverse()<< endl;
     // cout<<"Relative Frame Pose: "<< mCurrentFrame.mTcw*mCurrentFrame.mpReferenceKF->GetPoseInverse() << endl;
@@ -837,7 +837,7 @@ void Tracking::UpdateLastFrame()
     cv::Mat Tlr = mlRelativeFramePoses.back();
 
     mLastFrame.SetPose(Tlr*pRef->GetPose());
-    cout<< "Last Frame Pose:" << mLastFrame.mTcw<<endl;
+    //cout<< "Last Frame Pose:" << mLastFrame.mTcw<<endl;
 
     if(mnLastKeyFrameId==mLastFrame.mnId || mSensor==System::MONOCULAR || !mbOnlyTracking)
         return;

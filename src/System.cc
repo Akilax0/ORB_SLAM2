@@ -335,10 +335,10 @@ void System::SaveTrajectoryTUM(const string &filename)
     vector<KeyFrame*> vpKFs = mpMap->GetAllKeyFrames();
     sort(vpKFs.begin(),vpKFs.end(),KeyFrame::lId);
 
-    cout<< "Keyframes:" << endl;
-    for(int i=0;i<vpKFs.size();i++){
-        cout<<vpKFs[i]<<endl;
-    }
+    // cout<< "Keyframes:" << endl;
+    // for(int i=0;i<vpKFs.size();i++){
+    //     cout<<vpKFs[i]<<endl;
+    // }
 
     // Transform all keyframes so that the first keyframe is at the origin.
     // After a loop closure the first keyframe might not be at the origin.
@@ -412,7 +412,7 @@ void System::SaveKeyFrameTrajectoryTUM(const string &filename)
     {
         KeyFrame* pKF = vpKFs[i];
 
-        cout<< "pKF: "<< pKF << endl;
+       // cout<< "pKF: "<< pKF << endl;
 
        // pKF->SetPose(pKF->GetPose()*Two);
 
@@ -431,8 +431,8 @@ void System::SaveKeyFrameTrajectoryTUM(const string &filename)
         f << setprecision(6) << pKF->mTimeStamp << setprecision(7) << " " << t.at<float>(0) << " " << t.at<float>(1) << " " << t.at<float>(2)
           << " " << q[0] << " " << q[1] << " " << q[2] << " " << q[3] << endl;
 
-        cout << setprecision(6) << pKF->mTimeStamp << setprecision(7) << " " << t.at<float>(0) << " " << t.at<float>(1) << " " << t.at<float>(2)
-          << " " << q[0] << " " << q[1] << " " << q[2] << " " << q[3] << endl;
+        // cout << setprecision(6) << pKF->mTimeStamp << setprecision(7) << " " << t.at<float>(0) << " " << t.at<float>(1) << " " << t.at<float>(2)
+        //   << " " << q[0] << " " << q[1] << " " << q[2] << " " << q[3] << endl;
     }
 
     f.close();
@@ -504,14 +504,14 @@ void System::SaveTrajectoryKITTI(const string &filename)
              Rwc.at<float>(1,0) << " " << Rwc.at<float>(1,1)  << " " << Rwc.at<float>(1,2) << " "  << twc.at<float>(1) << " " <<
              Rwc.at<float>(2,0) << " " << Rwc.at<float>(2,1)  << " " << Rwc.at<float>(2,2) << " "  << twc.at<float>(2) << endl;
 
-        cout << setprecision(9) << Rwc.at<float>(0,0) << " " << Rwc.at<float>(0,1)  << " " << Rwc.at<float>(0,2) << " "  << twc.at<float>(0) << " " <<
-             Rwc.at<float>(1,0) << " " << Rwc.at<float>(1,1)  << " " << Rwc.at<float>(1,2) << " "  << twc.at<float>(1) << " " <<
-             Rwc.at<float>(2,0) << " " << Rwc.at<float>(2,1)  << " " << Rwc.at<float>(2,2) << " "  << twc.at<float>(2) << endl;
+        // cout << setprecision(9) << Rwc.at<float>(0,0) << " " << Rwc.at<float>(0,1)  << " " << Rwc.at<float>(0,2) << " "  << twc.at<float>(0) << " " <<
+        //      Rwc.at<float>(1,0) << " " << Rwc.at<float>(1,1)  << " " << Rwc.at<float>(1,2) << " "  << twc.at<float>(1) << " " <<
+        //      Rwc.at<float>(2,0) << " " << Rwc.at<float>(2,1)  << " " << Rwc.at<float>(2,2) << " "  << twc.at<float>(2) << endl;
     }
     cout << endl << "trajectory saved!" << endl;
     cout<< "Relative Frame Poses:" << endl;
     for(list<cv::Mat>::iterator lit=mpTracker->framePoses.begin(), lend=mpTracker->framePoses.end();lit!=lend;lit++){
-        cout<< *lit<< endl;
+//        cout<< *lit<< endl;
         cv::Mat Tcw = (*lit);
         cv::Mat Rwc = Tcw.rowRange(0,3).colRange(0,3).t();
         cv::Mat twc = -Rwc*Tcw.rowRange(0,3).col(3);

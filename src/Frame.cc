@@ -127,7 +127,8 @@ Frame::Frame(const cv::Mat &imGray, const cv::Mat &imDepth, const double &timeSt
 {
     // Frame ID
     mnId=nNextId++;
-    cout<<"Current Frame id: "<<mnId<<endl;
+    //cout<<"Current Frame id: "<<mnId<<endl;
+
 
     // Scale Level Info
     mnScaleLevels = mpORBextractorLeft->GetLevels();
