@@ -35,7 +35,6 @@ using namespace std;
 void LoadImages(const string &strAssociationFilename, vector<string> &vstrImageFilenamesRGB,
                 vector<string> &vstrImageFilenamesD, vector<double> &vTimestamps);
 
-
 /*
 
 argv
@@ -61,9 +60,6 @@ int main(int argc, char **argv)
     string strAssociationFilename = string(argv[4]);
     // Loading images(paths) to vectors 
     LoadImages(strAssociationFilename, vstrImageFilenamesRGB, vstrImageFilenamesD, vTimestamps);
-
-    
-    
 
     // Check consistency in the number of images and depthmaps
     int nImages = vstrImageFilenamesRGB.size();
