@@ -580,6 +580,133 @@ void System::SaveTrajectoryKITTI(const string &filename)
     f.close();
 }
 
+void System::SaveRelPose(const string &filename)
+{
+    cout << endl << "Saving Relative Pose to " << filename << " ..." << endl;
+    if(mSensor==MONOCULAR)
+    {
+        cerr << "ERROR: SaveRelPose cannot be used for monocular." << endl;
+        return;
+    }
+
+    vector<KeyFrame*> vpKFs = mpMap->GetAllKeyFrames();
+    sort(vpKFs.begin(),vpKFs.end(),KeyFrame::lId);
+
+
+    // Transform all keyframes so that the first keyframe is at the origin.
+    // After a loop closure the first keyframe might not be at the origin.
+    cv::Mat Two = vpKFs[0]->GetPoseInverse();
+
+    ofstream f;
+    f.open(filename.c_str());
+    f << fixed;
+
+    //Vectors to hold rotational and translational matrix
+    vector<cv::Mat> trans;
+    vector<cv::Mat> rot;
+
+    // Frame pose is stored relative to its reference keyframe (which is optimized by BA and pose graph).
+    // We need to get first the keyframe pose and then concatenate the relative transformation.
+    // Frames not localized (tracking failure) are not saved.
+
+    // For each frame we have a reference keyframe (lRit), the timestamp (lT) and a flag
+    // which is true when tracking failed (lbL).
+    list<ORB_SLAM2::KeyFrame*>::iterator lRit = mpTracker->mlpReferences.begin();
+    list<double>::iterator lT = mpTracker->mlFrameTimes.begin();
+    for(list<cv::Mat>::iterator lit=mpTracker->mlRelativeFramePoses.begin(), lend=mpTracker->mlRelativeFramePoses.end();lit!=lend;lit++, lRit++, lT++)
+    {
+        ORB_SLAM2::KeyFrame* pKF = *lRit;
+
+        cv::Mat Trw = cv::Mat::eye(4,4,CV_32F);
+
+        while(pKF->isBad())
+        {
+          //  cout << "bad parent" << endl;
+            Trw = Trw*pKF->mTcp;
+            pKF = pKF->GetParent();
+        }
+
+        Trw = Trw*pKF->GetPose()*Two;
+
+        cv::Mat Tcw = (*lit)*Trw;
+        // cv::Mat Tcw = (*lit);
+        cv::Mat Rwc = Tcw.rowRange(0,3).colRange(0,3).t();
+        cv::Mat twc = -Rwc*Tcw.rowRange(0,3).col(3);
+/**
+ * format of pose ORBSLAM output
+ *   
+ *      r00, r01, r02, tx
+ *      r10, r11, r12, ty
+ *      r20, r21, r22, tz
+ *        0,   0,   0,  1 
+ * 
+ * outputted as :  r00 r01 r02 tx r10 r11 r12 ty r20 r21 r22 tz
+ * 
+*/
+
+        trans.push_back(twc);
+        rot.push_back(Rwc);
+
+        // f << setprecision(9) << Rwc.at<float>(0,0) << " " << Rwc.at<float>(0,1)  << " " << Rwc.at<float>(0,2) << " "  << twc.at<float>(0) << " " <<
+        //      Rwc.at<float>(1,0) << " " << Rwc.at<float>(1,1)  << " " << Rwc.at<float>(1,2) << " "  << twc.at<float>(1) << " " <<
+        //      Rwc.at<float>(2,0) << " " << Rwc.at<float>(2,1)  << " " << Rwc.at<float>(2,2) << " "  << twc.at<float>(2) << endl;
+
+        // cout << setprecision(9) << Rwc.at<float>(0,0) << " " << Rwc.at<float>(0,1)  << " " << Rwc.at<float>(0,2) << " "  << twc.at<float>(0) << " " <<
+        //      Rwc.at<float>(1,0) << " " << Rwc.at<float>(1,1)  << " " << Rwc.at<float>(1,2) << " "  << twc.at<float>(1) << " " <<
+        //      Rwc.at<float>(2,0) << " " << Rwc.at<float>(2,1)  << " " << Rwc.at<float>(2,2) << " "  << twc.at<float>(2) << endl;
+    }
+    
+    for(unsigned int i=1;i<rot.size();i++){
+
+        cv::Mat Rwc1 = rot[i-1];
+        cv::Mat Rwc2 = rot[i];
+        cv::Mat twc1 = trans[i-1];
+        cv::Mat twc2 = trans[i];
+
+
+        if(i==1){
+
+        f << setprecision(9) << Rwc1.at<float>(0,0) << " " << Rwc1.at<float>(0,1)  << " " << Rwc1.at<float>(0,2) << " "  << twc1.at<float>(0) << " " <<
+             Rwc1.at<float>(1,0) << " " << Rwc1.at<float>(1,1)  << " " << Rwc1.at<float>(1,2) << " "  << twc1.at<float>(1) << " " <<
+             Rwc1.at<float>(2,0) << " " << Rwc1.at<float>(2,1)  << " " << Rwc1.at<float>(2,2) << " "  << twc1.at<float>(2) << endl;
+
+        }
+
+        cout<<"rotation 1 matrix: "<<endl;
+        cout<<Rwc1.at<float>(0,0)<<" "<<Rwc1.at<float>(0,1)<<" "<<Rwc1.at<float>(0,2)<<" "<<endl;
+        cout<<Rwc1.at<float>(1,0)<<" "<<Rwc1.at<float>(1,1)<<" "<<Rwc1.at<float>(1,2)<<" "<<endl;
+        cout<<Rwc1.at<float>(2,0)<<" "<<Rwc1.at<float>(2,1)<<" "<<Rwc1.at<float>(2,2)<<" "<<endl;
+        cout<<endl;
+        cout<<"translation 1 matrix: "<<endl;
+        cout<<twc1.at<float>(0)<<" "<<twc1.at<float>(2)<<" "<<twc1.at<float>(2)<<endl;
+        cout<<endl;
+
+        cout<<"rotation 2 matrix: "<<endl;
+        cout<<Rwc2.at<float>(0,0)<<" "<<Rwc2.at<float>(0,1)<<" "<<Rwc2.at<float>(0,2)<<" "<<endl;
+        cout<<Rwc2.at<float>(1,0)<<" "<<Rwc2.at<float>(1,1)<<" "<<Rwc2.at<float>(1,2)<<" "<<endl;
+        cout<<Rwc2.at<float>(2,0)<<" "<<Rwc2.at<float>(2,1)<<" "<<Rwc2.at<float>(2,2)<<" "<<endl;
+        cout<<endl;
+        cout<<"translation 2 matrix: "<<endl;
+        cout<<twc2.at<float>(0)<<" "<<twc2.at<float>(2)<<" "<<twc2.at<float>(2)<<endl;
+        cout<<endl;
+
+        cv::Mat Rwc_inv = Rwc1.t();
+        cout<<"rotation inverse matrix: "<<endl;
+        cout<<Rwc_inv.at<float>(0,0)<<" "<<Rwc_inv.at<float>(0,1)<<" "<<Rwc_inv.at<float>(0,2)<<" "<<endl;
+        cout<<Rwc_inv.at<float>(1,0)<<" "<<Rwc_inv.at<float>(1,1)<<" "<<Rwc_inv.at<float>(1,2)<<" "<<endl;
+        cout<<Rwc_inv.at<float>(2,0)<<" "<<Rwc_inv.at<float>(2,1)<<" "<<Rwc_inv.at<float>(2,2)<<" "<<endl;
+        cout<<endl;
+
+        cv::Mat R_diff = Rwc_inv * Rwc2;
+        cv::Mat t_diff = Rwc_inv * (twc2 - twc1);
+
+        f << setprecision(9) << R_diff.at<float>(0,0) << " " << R_diff.at<float>(0,1)  << " " << R_diff.at<float>(0,2) << " "  << t_diff.at<float>(0) << " " <<
+             R_diff.at<float>(1,0) << " " << R_diff.at<float>(1,1)  << " " << R_diff.at<float>(1,2) << " "  << t_diff.at<float>(1) << " " <<
+             R_diff.at<float>(2,0) << " " << R_diff.at<float>(2,1)  << " " << R_diff.at<float>(2,2) << " "  << t_diff.at<float>(2) << endl;
+
+    }
+    f.close();
+}
 
 int System::GetTrackingState()
 {

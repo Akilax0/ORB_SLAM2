@@ -111,6 +111,11 @@ public:
     // Call first Shutdown()
     // See format details at: http://www.cvlibs.net/datasets/kitti/eval_odometry.php
     void SaveTrajectoryKITTI(const string &filename);
+    
+    // Save camera trajectory in the Relative poses.
+    // Only for stereo and RGB-D. This method does not work for monocular.
+    // Call first Shutdown()
+    void SaveRelPose(const string &filename);
 
     // TODO: Save/Load functions
     // SaveMap(const string &filename);
