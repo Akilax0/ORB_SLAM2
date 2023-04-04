@@ -152,7 +152,7 @@ int main(int argc, char **argv)
     // Save camera trajectory
     // SLAM.SaveTrajectoryTUM("CameraTrajectory.txt");
     // SLAM.SaveKeyFrameTrajectoryTUM("KeyFrameTrajectory.txt");   
-    // SLAM.SaveTrajectoryKITTI("KITTITrajectory.txt");   
+    SLAM.SaveTrajectoryKITTI("KITTITrajectory.txt");   
     SLAM.SaveRelPose("Pose.txt");   
 
     return 0;
