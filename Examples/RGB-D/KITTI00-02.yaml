@@ -1,3 +1,4 @@
+%YAML:1.0
 Camera.fx: 718.856
 Camera.fy: 718.856
 Camera.cx: 607.1928
@@ -11,7 +12,7 @@ Camera.width: 640
 Camera.height: 192
 Camera.bKITTI: 0.54
 Camera.dKITTI: 80
-Camera.dmax: 30.0
+Camera.dmax: 40.0
 Camera.bf: 80
 ThDepth: 35.0
 DepthMapFactor: 5000.0

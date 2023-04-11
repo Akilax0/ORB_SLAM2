@@ -1,4 +1,5 @@
 import yaml
+import os
 
 
 '''
@@ -93,8 +94,28 @@ Viewer.ViewpointZ: -0.1
 Viewer.ViewpointF: 2000
 '''
 
+def prepend_line(file_name, line):
+    """ Insert given string as a new line at the beginning of a file """
+    # define name of temporary dummy file
+    dummy_file = file_name + '.bak'
+    # open original file in read mode and dummy file in write mode
+    with open(file_name, 'r') as read_obj, open(dummy_file, 'w') as write_obj:
+        # Write given line to the dummy file
+        write_obj.write(line + '\n')
+        # Read lines from original file one by one and append them to the dummy file
+        for line in read_obj:
+            write_obj.write(line)
+    # remove original file
+    os.remove(file_name)
+    # Rename dummy file as the original file
+    os.rename(dummy_file, file_name)
+
 def read_and_modify_one_block_of_yaml_data(filename, key, value):
+    skip_lines = 1
     with open(f'{filename}.yaml', 'r') as f:
+        for i in range(skip_lines):
+            _ = f.readline()
+
         data = yaml.load(f, Loader=yaml.FullLoader)
         data[f'{key}'] = float(f'{value}')
         loaded_data = list(data)
@@ -106,7 +127,9 @@ def read_and_modify_one_block_of_yaml_data(filename, key, value):
         yaml.dump(data,file, sort_keys=False)
     print(loaded_data) 
 
+    prepend_line(f'{filename}.yaml',"%YAML:1.0")
 
 
-read_and_modify_one_block_of_yaml_data('KITTI00-02', key='Camera.dmax', value=30)
+
+read_and_modify_one_block_of_yaml_data('KITTI00-02', key='Camera.dmax', value=40)
 
