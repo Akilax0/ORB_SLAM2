@@ -81,7 +81,27 @@ Tracking::Tracking(System *pSys, ORBVocabulary* pVoc, FrameDrawer *pFrameDrawer,
     }
     DistCoef.copyTo(mDistCoef);
 
-    mbf = fSettings["Camera.bf"];
+// ==================== Adaptive baseline preparation - akilax0 ==================
+
+    float bKITTI = fSettings["Camera.bKITTI"];
+    float dKITTI = fSettings["Camera.dKITTI"];
+
+    float b = bKITTI/dKITTI;
+
+    cout<<"baseline: "<<b<<endl;
+
+    float depth = fSettings["Camera.dmax"]; 
+
+    float adapt_b = b * depth;
+    cout<<"adaptive baseline: "<<adapt_b <<endl;
+
+    // reads Camera.bf
+    //mbf = fSettings["Camera.bf"];
+
+    mbf = b * fx;
+    cout<<"mbf : "<<mbf <<endl;
+
+// =================================================================================
 
     float fps = fSettings["Camera.fps"];
     if(fps==0)
