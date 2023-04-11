@@ -470,9 +470,9 @@ void System::SaveTrajectoryKITTI(const string &filename)
 
 
 
-    cout<<"All frame poses"<<endl;
+    // cout<<"All frame poses"<<endl;
 
-  //  f<<"============================== Cumulative frame poses Tcw ========================"<<endl;
+    // f<<"============================== Cumulative frame poses Tcw ========================"<<endl;
     // Frame pose is stored relative to its reference keyframe (which is optimized by BA and pose graph).
     // We need to get first the keyframe pose and then concatenate the relative transformation.
     // Frames not localized (tracking failure) are not saved.
@@ -544,30 +544,30 @@ void System::SaveTrajectoryKITTI(const string &filename)
 
     //     }
 
-    //     cout<<"rotation 1 matrix: "<<endl;
-    //     cout<<Rwc1.at<float>(0,0)<<" "<<Rwc1.at<float>(0,1)<<" "<<Rwc1.at<float>(0,2)<<" "<<endl;
-    //     cout<<Rwc1.at<float>(1,0)<<" "<<Rwc1.at<float>(1,1)<<" "<<Rwc1.at<float>(1,2)<<" "<<endl;
-    //     cout<<Rwc1.at<float>(2,0)<<" "<<Rwc1.at<float>(2,1)<<" "<<Rwc1.at<float>(2,2)<<" "<<endl;
-    //     cout<<endl;
-    //     cout<<"translation 1 matrix: "<<endl;
-    //     cout<<twc1.at<float>(0)<<" "<<twc1.at<float>(2)<<" "<<twc1.at<float>(2)<<endl;
-    //     cout<<endl;
+    //     // cout<<"rotation 1 matrix: "<<endl;
+    //     // cout<<Rwc1.at<float>(0,0)<<" "<<Rwc1.at<float>(0,1)<<" "<<Rwc1.at<float>(0,2)<<" "<<endl;
+    //     // cout<<Rwc1.at<float>(1,0)<<" "<<Rwc1.at<float>(1,1)<<" "<<Rwc1.at<float>(1,2)<<" "<<endl;
+    //     // cout<<Rwc1.at<float>(2,0)<<" "<<Rwc1.at<float>(2,1)<<" "<<Rwc1.at<float>(2,2)<<" "<<endl;
+    //     // cout<<endl;
+    //     // cout<<"translation 1 matrix: "<<endl;
+    //     // cout<<twc1.at<float>(0)<<" "<<twc1.at<float>(2)<<" "<<twc1.at<float>(2)<<endl;
+    //     // cout<<endl;
 
-    //     cout<<"rotation 2 matrix: "<<endl;
-    //     cout<<Rwc2.at<float>(0,0)<<" "<<Rwc2.at<float>(0,1)<<" "<<Rwc2.at<float>(0,2)<<" "<<endl;
-    //     cout<<Rwc2.at<float>(1,0)<<" "<<Rwc2.at<float>(1,1)<<" "<<Rwc2.at<float>(1,2)<<" "<<endl;
-    //     cout<<Rwc2.at<float>(2,0)<<" "<<Rwc2.at<float>(2,1)<<" "<<Rwc2.at<float>(2,2)<<" "<<endl;
-    //     cout<<endl;
-    //     cout<<"translation 2 matrix: "<<endl;
-    //     cout<<twc2.at<float>(0)<<" "<<twc2.at<float>(2)<<" "<<twc2.at<float>(2)<<endl;
-    //     cout<<endl;
+    //     // cout<<"rotation 2 matrix: "<<endl;
+    //     // cout<<Rwc2.at<float>(0,0)<<" "<<Rwc2.at<float>(0,1)<<" "<<Rwc2.at<float>(0,2)<<" "<<endl;
+    //     // cout<<Rwc2.at<float>(1,0)<<" "<<Rwc2.at<float>(1,1)<<" "<<Rwc2.at<float>(1,2)<<" "<<endl;
+    //     // cout<<Rwc2.at<float>(2,0)<<" "<<Rwc2.at<float>(2,1)<<" "<<Rwc2.at<float>(2,2)<<" "<<endl;
+    //     // cout<<endl;
+    //     // cout<<"translation 2 matrix: "<<endl;
+    //     // cout<<twc2.at<float>(0)<<" "<<twc2.at<float>(2)<<" "<<twc2.at<float>(2)<<endl;
+    //     // cout<<endl;
 
     //     cv::Mat Rwc_inv = Rwc1.t();
-    //     cout<<"rotation inverse matrix: "<<endl;
-    //     cout<<Rwc_inv.at<float>(0,0)<<" "<<Rwc_inv.at<float>(0,1)<<" "<<Rwc_inv.at<float>(0,2)<<" "<<endl;
-    //     cout<<Rwc_inv.at<float>(1,0)<<" "<<Rwc_inv.at<float>(1,1)<<" "<<Rwc_inv.at<float>(1,2)<<" "<<endl;
-    //     cout<<Rwc_inv.at<float>(2,0)<<" "<<Rwc_inv.at<float>(2,1)<<" "<<Rwc_inv.at<float>(2,2)<<" "<<endl;
-    //     cout<<endl;
+    //     // cout<<"rotation inverse matrix: "<<endl;
+    //     // cout<<Rwc_inv.at<float>(0,0)<<" "<<Rwc_inv.at<float>(0,1)<<" "<<Rwc_inv.at<float>(0,2)<<" "<<endl;
+    //     // cout<<Rwc_inv.at<float>(1,0)<<" "<<Rwc_inv.at<float>(1,1)<<" "<<Rwc_inv.at<float>(1,2)<<" "<<endl;
+    //     // cout<<Rwc_inv.at<float>(2,0)<<" "<<Rwc_inv.at<float>(2,1)<<" "<<Rwc_inv.at<float>(2,2)<<" "<<endl;
+    //     // cout<<endl;
 
     //     cv::Mat R_diff = Rwc_inv * Rwc2;
     //     cv::Mat t_diff = Rwc_inv * (twc2 - twc1);
