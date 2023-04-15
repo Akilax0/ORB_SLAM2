@@ -115,7 +115,7 @@ public:
     // Save camera trajectory in the Relative poses.
     // Only for stereo and RGB-D. This method does not work for monocular.
     // Call first Shutdown()
-    void SaveRelPose(const string &filename);
+    void SaveRelPose(const string &filename, const string &filename1);
 
     // TODO: Save/Load functions
     // SaveMap(const string &filename);

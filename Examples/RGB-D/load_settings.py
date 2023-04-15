@@ -1,4 +1,12 @@
 import yaml
+
+import time 
+import math
+from decimal import Decimal
+import re
+from datetime import datetime
+import sys
+import getopt
 import os
 
 
@@ -110,7 +118,7 @@ def prepend_line(file_name, line):
     # Rename dummy file as the original file
     os.rename(dummy_file, file_name)
 
-def read_and_modify_one_block_of_yaml_data(filename, key, value):
+def read_and_modify_one_block_of_yaml_data(filename, key, value):    
     skip_lines = 1
     with open(f'{filename}.yaml', 'r') as f:
         for i in range(skip_lines):
@@ -129,7 +137,46 @@ def read_and_modify_one_block_of_yaml_data(filename, key, value):
 
     prepend_line(f'{filename}.yaml',"%YAML:1.0")
 
+if __name__ == "__main__":
+    argv = sys.argv
+
+    arg_input = ""
+    arg_help = "{0} -i <input>".format(argv[0])
+    
+    try:
+        opts, args = getopt.getopt(argv[1:], "hi:", ["help", "input="])
+    except:
+        print(arg_help)
+        sys.exit(2)
+    
+    for opt, arg in opts:
+        if opt in ("-h", "--help"):
+            print(arg_help)  # print the help message
+            sys.exit(2)
+        elif opt in ("-i", "--input"):
+            arg_input = arg
+    
+    arg_arr = arg_input.split('/')
+    arg_arr.append("max_depth.txt")
+    depth_file = '/'.join(arg_arr)
+    print(depth_file)
 
 
-read_and_modify_one_block_of_yaml_data('KITTI00-02', key='Camera.dmax', value=40)
+
+    #output_file = arg_input + "/epoch_out.txt"
+    f1 = open(depth_file, "w")
+    #f.write("Now the file has more content!")
+    
+    with open(arg_input) as f:
+        lines = f.readlines()
+        
+        for i in lines:
+            i = i.strip('\n')
+            print("line:",i)
+    f.close()
+
+
+
+
+    read_and_modify_one_block_of_yaml_data('KITTI00-02', key='Camera.dmax', value=40)
 

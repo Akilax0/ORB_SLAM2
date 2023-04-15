@@ -468,8 +468,6 @@ void System::SaveTrajectoryKITTI(const string &filename)
     vector<cv::Mat> trans;
     vector<cv::Mat> rot;
 
-
-
     // cout<<"All frame poses"<<endl;
 
     // f<<"============================== Cumulative frame poses Tcw ========================"<<endl;
@@ -580,26 +578,14 @@ void System::SaveTrajectoryKITTI(const string &filename)
     f.close();
 }
 
-void System::SaveRelPose(const string &filename)
-{
-    cout << endl << "Saving Relative Pose to " << filename << " ..." << endl;
-    if(mSensor==MONOCULAR)
-    {
-        cerr << "ERROR: SaveRelPose cannot be used for monocular." << endl;
-        return;
-    }
+void System::SaveRelPose(const string &filename, const string&filename1){
 
     vector<KeyFrame*> vpKFs = mpMap->GetAllKeyFrames();
     sort(vpKFs.begin(),vpKFs.end(),KeyFrame::lId);
 
-
     // Transform all keyframes so that the first keyframe is at the origin.
     // After a loop closure the first keyframe might not be at the origin.
     cv::Mat Two = vpKFs[0]->GetPoseInverse();
-
-    ofstream f;
-    f.open(filename.c_str());
-    f << fixed;
 
     //Vectors to hold rotational and translational matrix
     vector<cv::Mat> trans;
@@ -647,65 +633,93 @@ void System::SaveRelPose(const string &filename)
         trans.push_back(twc);
         rot.push_back(Rwc);
 
-        // f << setprecision(9) << Rwc.at<float>(0,0) << " " << Rwc.at<float>(0,1)  << " " << Rwc.at<float>(0,2) << " "  << twc.at<float>(0) << " " <<
+        // f1 << setprecision(9) << Rwc.at<float>(0,0) << " " << Rwc.at<float>(0,1)  << " " << Rwc.at<float>(0,2) << " "  << twc.at<float>(0) << " " <<
         //      Rwc.at<float>(1,0) << " " << Rwc.at<float>(1,1)  << " " << Rwc.at<float>(1,2) << " "  << twc.at<float>(1) << " " <<
         //      Rwc.at<float>(2,0) << " " << Rwc.at<float>(2,1)  << " " << Rwc.at<float>(2,2) << " "  << twc.at<float>(2) << endl;
+
 
         // cout << setprecision(9) << Rwc.at<float>(0,0) << " " << Rwc.at<float>(0,1)  << " " << Rwc.at<float>(0,2) << " "  << twc.at<float>(0) << " " <<
         //      Rwc.at<float>(1,0) << " " << Rwc.at<float>(1,1)  << " " << Rwc.at<float>(1,2) << " "  << twc.at<float>(1) << " " <<
         //      Rwc.at<float>(2,0) << " " << Rwc.at<float>(2,1)  << " " << Rwc.at<float>(2,2) << " "  << twc.at<float>(2) << endl;
     }
+
+    ofstream f1;
+    f1.open(filename1.c_str());
+    f1 << fixed;
+
+    ofstream f;
+    f.open(filename.c_str());
+    f << fixed;
     
-    for(unsigned int i=1;i<rot.size();i++){
+    for(unsigned int i=0;i<rot.size();i++){
 
-        cv::Mat Rwc1 = rot[i-1];
-        cv::Mat Rwc2 = rot[i];
-        cv::Mat twc1 = trans[i-1];
-        cv::Mat twc2 = trans[i];
+        if(i==0){
 
+            cv::Mat Rwc1 = rot[i];
+            cv::Mat twc1 = trans[i];
 
-        if(i==1){
+            f << setprecision(9) << Rwc1.at<float>(0,0) << " " << Rwc1.at<float>(0,1)  << " " << Rwc1.at<float>(0,2) << " "  << twc1.at<float>(0) << " " <<
+                Rwc1.at<float>(1,0) << " " << Rwc1.at<float>(1,1)  << " " << Rwc1.at<float>(1,2) << " "  << twc1.at<float>(1) << " " <<
+                Rwc1.at<float>(2,0) << " " << Rwc1.at<float>(2,1)  << " " << Rwc1.at<float>(2,2) << " "  << twc1.at<float>(2) << endl;
 
-        f << setprecision(9) << Rwc1.at<float>(0,0) << " " << Rwc1.at<float>(0,1)  << " " << Rwc1.at<float>(0,2) << " "  << twc1.at<float>(0) << " " <<
-             Rwc1.at<float>(1,0) << " " << Rwc1.at<float>(1,1)  << " " << Rwc1.at<float>(1,2) << " "  << twc1.at<float>(1) << " " <<
-             Rwc1.at<float>(2,0) << " " << Rwc1.at<float>(2,1)  << " " << Rwc1.at<float>(2,2) << " "  << twc1.at<float>(2) << endl;
+            f1 << setprecision(9) << Rwc1.at<float>(0,0) << " " << Rwc1.at<float>(0,1)  << " " << Rwc1.at<float>(0,2) << " "  << twc1.at<float>(0) << " " <<
+                Rwc1.at<float>(1,0) << " " << Rwc1.at<float>(1,1)  << " " << Rwc1.at<float>(1,2) << " "  << twc1.at<float>(1) << " " <<
+                Rwc1.at<float>(2,0) << " " << Rwc1.at<float>(2,1)  << " " << Rwc1.at<float>(2,2) << " "  << twc1.at<float>(2) << endl;
 
         }
+        else{
+            cv::Mat Rwc1 = rot[i-1];
+            cv::Mat Rwc2 = rot[i];
+            cv::Mat twc1 = trans[i-1];
+            cv::Mat twc2 = trans[i];
 
-        // cout<<"rotation 1 matrix: "<<endl;
-        // cout<<Rwc1.at<float>(0,0)<<" "<<Rwc1.at<float>(0,1)<<" "<<Rwc1.at<float>(0,2)<<" "<<endl;
-        // cout<<Rwc1.at<float>(1,0)<<" "<<Rwc1.at<float>(1,1)<<" "<<Rwc1.at<float>(1,2)<<" "<<endl;
-        // cout<<Rwc1.at<float>(2,0)<<" "<<Rwc1.at<float>(2,1)<<" "<<Rwc1.at<float>(2,2)<<" "<<endl;
-        // cout<<endl;
-        // cout<<"translation 1 matrix: "<<endl;
-        // cout<<twc1.at<float>(0)<<" "<<twc1.at<float>(2)<<" "<<twc1.at<float>(2)<<endl;
-        // cout<<endl;
+            // cout<<"rotation 1 matrix: "<<endl;
+            // cout<<Rwc1.at<float>(0,0)<<" "<<Rwc1.at<float>(0,1)<<" "<<Rwc1.at<float>(0,2)<<" "<<endl;
+            // cout<<Rwc1.at<float>(1,0)<<" "<<Rwc1.at<float>(1,1)<<" "<<Rwc1.at<float>(1,2)<<" "<<endl;
+            // cout<<Rwc1.at<float>(2,0)<<" "<<Rwc1.at<float>(2,1)<<" "<<Rwc1.at<float>(2,2)<<" "<<endl;
+            // cout<<endl;
+            // cout<<"translation 1 matrix: "<<endl;
+            // cout<<twc1.at<float>(0)<<" "<<twc1.at<float>(2)<<" "<<twc1.at<float>(2)<<endl;
+            // cout<<endl;
 
-        // cout<<"rotation 2 matrix: "<<endl;
-        // cout<<Rwc2.at<float>(0,0)<<" "<<Rwc2.at<float>(0,1)<<" "<<Rwc2.at<float>(0,2)<<" "<<endl;
-        // cout<<Rwc2.at<float>(1,0)<<" "<<Rwc2.at<float>(1,1)<<" "<<Rwc2.at<float>(1,2)<<" "<<endl;
-        // cout<<Rwc2.at<float>(2,0)<<" "<<Rwc2.at<float>(2,1)<<" "<<Rwc2.at<float>(2,2)<<" "<<endl;
-        // cout<<endl;
-        // cout<<"translation 2 matrix: "<<endl;
-        // cout<<twc2.at<float>(0)<<" "<<twc2.at<float>(2)<<" "<<twc2.at<float>(2)<<endl;
-        // cout<<endl;
+            // cout<<"rotation 2 matrix: "<<endl;
+            // cout<<Rwc2.at<float>(0,0)<<" "<<Rwc2.at<float>(0,1)<<" "<<Rwc2.at<float>(0,2)<<" "<<endl;
+            // cout<<Rwc2.at<float>(1,0)<<" "<<Rwc2.at<float>(1,1)<<" "<<Rwc2.at<float>(1,2)<<" "<<endl;
+            // cout<<Rwc2.at<float>(2,0)<<" "<<Rwc2.at<float>(2,1)<<" "<<Rwc2.at<float>(2,2)<<" "<<endl;
+            // cout<<endl;
+            // cout<<"translation 2 matrix: "<<endl;
+            // cout<<twc2.at<float>(0)<<" "<<twc2.at<float>(2)<<" "<<twc2.at<float>(2)<<endl;
+            // cout<<endl;
 
-        cv::Mat Rwc_inv = Rwc1.t();
-        // cout<<"rotation inverse matrix: "<<endl;
-        // cout<<Rwc_inv.at<float>(0,0)<<" "<<Rwc_inv.at<float>(0,1)<<" "<<Rwc_inv.at<float>(0,2)<<" "<<endl;
-        // cout<<Rwc_inv.at<float>(1,0)<<" "<<Rwc_inv.at<float>(1,1)<<" "<<Rwc_inv.at<float>(1,2)<<" "<<endl;
-        // cout<<Rwc_inv.at<float>(2,0)<<" "<<Rwc_inv.at<float>(2,1)<<" "<<Rwc_inv.at<float>(2,2)<<" "<<endl;
-        // cout<<endl;
+            cv::Mat Rwc_inv = Rwc1.t();
+            // cout<<"rotation inverse matrix: "<<endl;
+            // cout<<Rwc_inv.at<float>(0,0)<<" "<<Rwc_inv.at<float>(0,1)<<" "<<Rwc_inv.at<float>(0,2)<<" "<<endl;
+            // cout<<Rwc_inv.at<float>(1,0)<<" "<<Rwc_inv.at<float>(1,1)<<" "<<Rwc_inv.at<float>(1,2)<<" "<<endl;
+            // cout<<Rwc_inv.at<float>(2,0)<<" "<<Rwc_inv.at<float>(2,1)<<" "<<Rwc_inv.at<float>(2,2)<<" "<<endl;
+            // cout<<endl;
 
-        cv::Mat R_diff = Rwc_inv * Rwc2;
-        cv::Mat t_diff = Rwc_inv * (twc2 - twc1);
+            cv::Mat R_diff = Rwc_inv * Rwc2;
+            cv::Mat t_diff = Rwc_inv * (twc2 - twc1);
 
-        f << setprecision(9) << R_diff.at<float>(0,0) << " " << R_diff.at<float>(0,1)  << " " << R_diff.at<float>(0,2) << " "  << t_diff.at<float>(0) << " " <<
-             R_diff.at<float>(1,0) << " " << R_diff.at<float>(1,1)  << " " << R_diff.at<float>(1,2) << " "  << t_diff.at<float>(1) << " " <<
-             R_diff.at<float>(2,0) << " " << R_diff.at<float>(2,1)  << " " << R_diff.at<float>(2,2) << " "  << t_diff.at<float>(2) << endl;
+            f << setprecision(9) << R_diff.at<float>(0,0) << " " << R_diff.at<float>(0,1)  << " " << R_diff.at<float>(0,2) << " "  << t_diff.at<float>(0) << " " <<
+                R_diff.at<float>(1,0) << " " << R_diff.at<float>(1,1)  << " " << R_diff.at<float>(1,2) << " "  << t_diff.at<float>(1) << " " <<
+                R_diff.at<float>(2,0) << " " << R_diff.at<float>(2,1)  << " " << R_diff.at<float>(2,2) << " "  << t_diff.at<float>(2) << endl;
 
+           // R2 = R1 * R_diff
+           // t2 = R1 * t_diff + t1
+            cv::Mat R2 = Rwc1 * R_diff;
+            cv::Mat t2 = (Rwc1 * t_diff) + twc1;
+
+            f1 << setprecision(9) << R2.at<float>(0,0) << " " << R2.at<float>(0,1)  << " " << R2.at<float>(0,2) << " "  << t2.at<float>(0) << " " <<
+                R2.at<float>(1,0) << " " << R2.at<float>(1,1)  << " " << R2.at<float>(1,2) << " "  << t2.at<float>(1) << " " <<
+                R2.at<float>(2,0) << " " << R2.at<float>(2,1)  << " " << R2.at<float>(2,2) << " "  << t2.at<float>(2) << endl;
+
+        }
     }
     f.close();
+    f1.close();
+
+    cout<<"Cumulative saved"<<endl;
 }
 
 int System::GetTrackingState()
