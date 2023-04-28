@@ -56,6 +56,7 @@ Tracking::Tracking(System *pSys, ORBVocabulary* pVoc, FrameDrawer *pFrameDrawer,
     // Load camera parameters from settings file
 
     cv::FileStorage fSettings(strSettingPath, cv::FileStorage::READ);
+    cout<< "File Path: " <<strSettingPath << endl;
     float fx = fSettings["Camera.fx"];
     float fy = fSettings["Camera.fy"];
     float cx = fSettings["Camera.cx"];
@@ -98,7 +99,7 @@ Tracking::Tracking(System *pSys, ORBVocabulary* pVoc, FrameDrawer *pFrameDrawer,
     // reads Camera.bf
     //mbf = fSettings["Camera.bf"];
 
-    mbf = b * fx;
+    mbf = adapt_b * fx;
     cout<<"mbf : "<<mbf <<endl;
 
 // =================================================================================

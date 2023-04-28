@@ -45,8 +45,10 @@ int main(int argc, char **argv)
 
     // Retrieve paths to images
     vector<string> vstrImageFilenames;
-    vector<double> vTimestamps;
+    vector<double> vTimestamps; 
+    
     string strFile = string(argv[3])+"/rgb.txt";
+    cout<<"Looking for :" << strFile << endl;
     LoadImages(strFile, vstrImageFilenames, vTimestamps);
 
     int nImages = vstrImageFilenames.size();

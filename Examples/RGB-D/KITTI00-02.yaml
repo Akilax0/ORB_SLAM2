@@ -12,7 +12,7 @@ Camera.width: 640
 Camera.height: 192
 Camera.bKITTI: 0.54
 Camera.dKITTI: 80
-Camera.dmax: 40.0
+Camera.dmax: 98.7311
 Camera.bf: 80
 ThDepth: 35.0
 DepthMapFactor: 5000.0

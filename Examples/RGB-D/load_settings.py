@@ -137,6 +137,25 @@ def read_and_modify_one_block_of_yaml_data(filename, key, value):
 
     prepend_line(f'{filename}.yaml',"%YAML:1.0")
 
+def read_and_modify_one_block_arr_of_yaml_data(filename, key, depths):    
+    skip_lines = 1
+    with open(f'{filename}.yaml', 'r') as f:
+        for i in range(skip_lines):
+            _ = f.readline()
+
+        data = yaml.load(f, Loader=yaml.FullLoader)
+        data[f'{key}'] = depths
+        loaded_data = list(data)
+        print(data) 
+        print(loaded_data)
+    print('done!')
+
+    with open(f'{filename}.yaml', 'w') as file:
+        yaml.dump(data,file, sort_keys=False)
+    print(loaded_data) 
+
+    prepend_line(f'{filename}.yaml',"%YAML:1.0")
+
 if __name__ == "__main__":
     argv = sys.argv
 
@@ -162,21 +181,21 @@ if __name__ == "__main__":
     print(depth_file)
 
 
-
-    #output_file = arg_input + "/epoch_out.txt"
-    f1 = open(depth_file, "w")
-    #f.write("Now the file has more content!")
-    
-    with open(arg_input) as f:
+    depths = []
+    with open(depth_file) as f:
         lines = f.readlines()
-        
+
         for i in lines:
             i = i.strip('\n')
-            print("line:",i)
+            depths.append(i)
+
     f.close()
 
+    print("Max Depth of sequence ", max(depths))
 
 
+    
 
-    read_and_modify_one_block_of_yaml_data('KITTI00-02', key='Camera.dmax', value=40)
+    # read_and_modify_one_block_of_yaml_data('KITTI00-02', key='Camera.dmax', value=40)
+    read_and_modify_one_block_of_yaml_data('KITTI00-02', key='Camera.dmax', depths=depths)
 
